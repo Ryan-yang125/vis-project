@@ -1,23 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
-
+/*
+ * @Author: Yang Rui
+ * @Date: 2021-01-09 10:14:23
+ * @LastEditTime: 2021-01-09 16:18:22
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /vis/src/App.js
+ */
+import Grid from './components/Grid'
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div>Soccer</div>
+      <Grid />
     </div>
   );
 }
