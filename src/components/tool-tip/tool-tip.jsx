@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-12 12:54:11
- * @LastEditTime: 2021-01-12 16:15:34
+ * @LastEditTime: 2021-01-12 18:47:46
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/right-property/right-property.jsx
@@ -16,6 +16,7 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "hidden",
     maxHeight: "90vh",
     marginRight: "1vw",
+    width: "95%",
   },
 }));
 const ToolTip = (props) => {

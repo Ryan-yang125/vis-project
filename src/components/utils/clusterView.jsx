@@ -1,26 +1,33 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-12 15:58:23
+ * @LastEditTime: 2021-01-12 20:20:03
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
  */
 import * as d3 from "d3";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 const useStyle = makeStyles((theme) => ({
   svgContainer: {
     margin: theme.spacing(2),
+    width: "90%",
+    height: "100%",
+    position: "relative",
+  },
+  svgMove: {
+    position: "absolute",
+    top: "10%",
   },
 }));
 
 const ClusterView = (props) => {
   const classes = useStyle();
   const topSvg = useRef(null);
+
   useEffect(() => {
-    const svgWidth = 1150 * props.scale;
-    const svgHeight = 720 * props.scale;
+    // parse data into positions[]
     const clusterNum = props.num;
     const clusterPos = [];
     const clusterLen = props.data[clusterNum].length;
@@ -37,59 +44,78 @@ const ClusterView = (props) => {
         eventPos.push(eventSeq[eventLen - 1].positions[1]);
       clusterPos.push(eventPos);
     });
+    //svg render directly on dom by useRef
     if (topSvg.current) {
-      const margin = 3;
-      const svg = d3
-        .select(topSvg.current)
-        .attr("width", svgWidth)
-        .attr("height", svgHeight)
-        .attr(
-          "viewBox",
-          `0 0 ${svgWidth / props.scale} ${svgHeight / props.scale}`
-        )
-        .attr("preserveAspectRatio", "none");
-      svg.selectAll(".notField").remove();
+      const margin = 4.5;
+      const svgWidth = 1150;
+      const svgHeight = 720;
+      const svg = d3.select(topSvg.current);
+      svg.selectAll("*").remove();
       const myXScale = d3.scaleLinear().domain([0, 100]).range([0, svgWidth]);
       const myYScale = d3.scaleLinear().domain([0, 100]).range([0, svgHeight]);
       svg
         .append("g")
-        .classed("notField", true)
         .append("text")
-        .attr("x", 100)
-        .attr("y", 100)
-        .text(`Shots:${clusterShots}`);
-      svg
-        .append("g")
-        .classed("notField", true)
-
-        .append("text")
-        .attr("x", 50)
+        .attr("x", 70)
         .attr("y", 50)
-        .text(`Phases:${clusterLen}`);
-      const nodeG = svg.append("g").classed("notField", true);
-      const linkG = svg.append("g").classed("notField", true);
-      clusterPos.forEach((phasePos) => {
+        .text(`Shots:${clusterShots}\nPhases:${clusterLen}`);
+      const phaseGs = svg.append("g");
+      const highLightPhase = (phaseGroup) => {
+        const currentDis = phaseGroup
+          .selectAll("circle")
+          .filter((d, i) => i !== 0)
+          .attr("display");
+        const newDis = currentDis === "none" ? "initial" : "none";
+        phaseGroup
+          .selectAll("circle")
+          .filter((d, i) => i !== 0)
+          .attr("display", newDis);
+        const currentColor = phaseGroup.selectAll("line").style("stroke");
+        const newColor =
+          currentColor.toString() === "rgb(0, 0, 0)"
+            ? "rgb(255, 0, 0)"
+            : "rgb(0, 0, 0)";
+
+        phaseGroup.selectAll("line").style("stroke", newColor);
+      };
+      clusterPos.forEach((phasePos, index) => {
+        const phaseGroup = phaseGs.append("g").classed(`phase-${index}`, true);
         for (let i = 0; i < phasePos.length - 1; i++) {
           let nodeColor = "#000";
+          let nodeShow = "none";
           let howMargin = !phasePos[i].y
             ? -margin
             : phasePos[i].y === 100
             ? margin
             : 0;
-          if (i === 0) nodeColor = "#f00";
-          nodeG
-            .append("circle")
-            .attr("cx", myXScale(phasePos[i].x))
-            .attr("cy", svgHeight + howMargin - myYScale(phasePos[i].y))
-            .attr("r", 3)
-            .style("fill", nodeColor);
-          linkG
+          if (i === 0) {
+            nodeColor = "#f00";
+            nodeShow = "initial";
+            phaseGroup
+              .append("circle")
+              .attr("cx", myXScale(phasePos[i].x))
+              .attr("cy", svgHeight + howMargin - myYScale(phasePos[i].y))
+              .attr("r", margin)
+              .attr("display", nodeShow)
+              .style("fill", nodeColor)
+              .on("click", () => {
+                highLightPhase(phaseGroup);
+              });
+          } else
+            phaseGroup
+              .append("circle")
+              .attr("cx", myXScale(phasePos[i].x))
+              .attr("cy", svgHeight + howMargin - myYScale(phasePos[i].y))
+              .attr("r", margin)
+              .attr("display", nodeShow)
+              .style("fill", nodeColor);
+          phaseGroup
             .append("line")
             .attr("x1", myXScale(phasePos[i].x))
             .attr("y1", svgHeight + howMargin - myYScale(phasePos[i].y))
             .attr("x2", myXScale(phasePos[i + 1].x))
             .attr("y2", svgHeight + howMargin - myYScale(phasePos[i + 1].y))
-            .style("strokeWidth", 2)
+            .style("strokeWidth", 5)
             .style("stroke", "#000");
         }
       });
@@ -98,7 +124,7 @@ const ClusterView = (props) => {
 
   return (
     <div className={classes.svgContainer}>
-      <svg ref={topSvg}>
+      <svg className={classes.svgMove} viewBox="0 0 1150 720">
         <g className="field">
           {" "}
           <rect y="0" x="0" height="720" fill="green" width="1150" />
@@ -193,6 +219,11 @@ const ClusterView = (props) => {
           />
         </g>
       </svg>
+      <svg
+        ref={topSvg}
+        className={classes.svgMove}
+        viewBox="0 0 1150 720"
+      ></svg>
     </div>
   );
 };
