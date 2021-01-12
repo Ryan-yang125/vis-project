@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-09 16:16:25
- * @LastEditTime: 2021-01-12 00:23:24
+ * @LastEditTime: 2021-01-12 16:20:29
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/grid.jsx
@@ -14,23 +14,51 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
-import { Button } from "@material-ui/core";
+import { Button, Paper, CircularProgress } from "@material-ui/core";
 import axios from "axios";
+import ClusterViewTop from "../utils/clusterView";
+import ToolTip from "../tool-tip/tool-tip";
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    width: "10vw",
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  formContainer: {
+    marginLeft: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    width: "12vw",
+    minHeight: "90vh",
+  },
+  mainContainer: {
+    display: "flex",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+  },
+  clusterCard: {
+    // minWidth: 650,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "68vw",
+  },
+  toolContainer: {
+    display: "flex",
+    width: "18vw",
+  },
 }));
 
-export default function (props) {
+const MatchSelector = (props) => {
   const classes = useStyles();
+  const [clusteredData, setClusteredData] = useState([]);
   const [competition, setCompetition] = useState(0);
   const [team, setTeam] = useState(0);
   const [match, setMatch] = useState(0);
+  const [ifLoading, setIfLoading] = useState(false);
   const handleCompetitionChange = (event) => {
     setCompetition(event.target.value);
   };
@@ -74,58 +102,87 @@ export default function (props) {
     });
     return matches;
   };
-  //TODO
   const sendMatches = async () => {
     const selectedMatch =
       matchData.children[competition].children[team].children[match];
     console.log(selectedMatch.wyId);
     try {
+      setIfLoading(true);
       const response = await axios.get(
         `http://localhost:5500/?wyId=${selectedMatch.wyId}`
       );
       console.log(response.data);
+      setIfLoading(false);
+      setClusteredData(response.data);
     } catch (error) {
+      setTimeout(() => {
+        setIfLoading(false);
+      }, 5000);
       console.log(error);
     }
   };
+  let clusterViewTop = <div></div>;
+  let clusterViewOthers = <div></div>;
+  // TODO cluterView refresh too many times
+  if (clusteredData.length !== 0) {
+    clusterViewTop = (
+      <ClusterViewTop data={clusteredData} num={0} scale={1.0} />
+    );
+    clusterViewOthers = <ToolTip data={clusteredData} />;
+  }
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="competition-select-label">Competition</InputLabel>
-        <Select
-          labelId="competition-select-label"
-          id="competition-select"
-          value={competition}
-          onChange={handleCompetitionChange}
-        >
-          {getCompetitions()}
-        </Select>
-      </FormControl>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="team-select-label">Team</InputLabel>
-        <Select
-          labelId="team-select-label"
-          id="team-select"
-          value={team}
-          onChange={handleTeamChange}
-        >
-          {getTeams()}
-        </Select>
-      </FormControl>
-      <FormControl className={classes.formControl}>
-        <InputLabel id="match-select-label">Match</InputLabel>
-        <Select
-          labelId="match-select-label"
-          id="match-select"
-          value={match}
-          onChange={handleMatchChange}
-        >
-          {getMatches()}
-        </Select>
+    <div className={classes.mainContainer}>
+      <Paper elevation={1} className={classes.formContainer}>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="competition-select-label" color="primary">
+            Competition
+          </InputLabel>
+          <Select
+            labelId="competition-select-label"
+            id="competition-select"
+            value={competition}
+            onChange={handleCompetitionChange}
+          >
+            {getCompetitions()}
+          </Select>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="team-select-label">Team</InputLabel>
+          <Select
+            labelId="team-select-label"
+            id="team-select"
+            value={team}
+            onChange={handleTeamChange}
+          >
+            {getTeams()}
+          </Select>
+        </FormControl>
+        <FormControl className={classes.formControl}>
+          <InputLabel id="match-select-label">Match</InputLabel>
+          <Select
+            labelId="match-select-label"
+            id="match-select"
+            value={match}
+            onChange={handleMatchChange}
+          >
+            {getMatches()}
+          </Select>
+        </FormControl>
         <Button variant="contained" onClick={sendMatches}>
           Confirm
         </Button>
-      </FormControl>
+      </Paper>
+      <Paper elevation={5} className={classes.clusterCard}>
+        {ifLoading ? (
+          <CircularProgress size="5vw" color="inherit" />
+        ) : (
+          clusterViewTop
+        )}
+      </Paper>
+      <Paper elevation={2} className={classes.toolContainer}>
+        {clusterViewOthers}
+      </Paper>
     </div>
   );
-}
+};
+export default MatchSelector;
