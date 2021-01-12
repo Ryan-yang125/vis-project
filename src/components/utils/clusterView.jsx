@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-12 20:20:03
+ * @LastEditTime: 2021-01-12 21:30:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
@@ -47,8 +47,8 @@ const ClusterView = (props) => {
     //svg render directly on dom by useRef
     if (topSvg.current) {
       const margin = 4.5;
-      const svgWidth = 1150;
-      const svgHeight = 720;
+      const svgWidth = 1082;
+      const svgHeight = 688;
       const svg = d3.select(topSvg.current);
       svg.selectAll("*").remove();
       const myXScale = d3.scaleLinear().domain([0, 100]).range([0, svgWidth]);
@@ -75,8 +75,10 @@ const ClusterView = (props) => {
           currentColor.toString() === "rgb(0, 0, 0)"
             ? "rgb(255, 0, 0)"
             : "rgb(0, 0, 0)";
-
         phaseGroup.selectAll("line").style("stroke", newColor);
+        const currentWidth = phaseGroup.selectAll("line").style("stroke-width");
+        const newWidth = currentWidth.toString() === "2" ? "4" : "2";
+        phaseGroup.selectAll("line").style("stroke-width", newWidth);
       };
       clusterPos.forEach((phasePos, index) => {
         const phaseGroup = phaseGs.append("g").classed(`phase-${index}`, true);
@@ -89,7 +91,7 @@ const ClusterView = (props) => {
             ? margin
             : 0;
           if (i === 0) {
-            nodeColor = "#f00";
+            nodeColor = "#E71D36";
             nodeShow = "initial";
             phaseGroup
               .append("circle")
@@ -115,7 +117,7 @@ const ClusterView = (props) => {
             .attr("y1", svgHeight + howMargin - myYScale(phasePos[i].y))
             .attr("x2", myXScale(phasePos[i + 1].x))
             .attr("y2", svgHeight + howMargin - myYScale(phasePos[i + 1].y))
-            .style("strokeWidth", 5)
+            .style("stroke-width", 2)
             .style("stroke", "#000");
         }
       });
@@ -124,7 +126,7 @@ const ClusterView = (props) => {
 
   return (
     <div className={classes.svgContainer}>
-      <svg className={classes.svgMove} viewBox="0 0 1150 720">
+      <svg className={classes.svgMove} viewBox="33 16 1082 688">
         <g className="field">
           {" "}
           <rect y="0" x="0" height="720" fill="green" width="1150" />
@@ -222,7 +224,7 @@ const ClusterView = (props) => {
       <svg
         ref={topSvg}
         className={classes.svgMove}
-        viewBox="0 0 1150 720"
+        viewBox="0 0 1082 688"
       ></svg>
     </div>
   );
