@@ -1,14 +1,15 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-13 19:06:34
+ * @LastEditTime: 2021-01-14 00:02:02
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
  */
 import * as d3 from "d3";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import * as basicGraph from "./basicGraph";
 const useStyle = makeStyles((theme) => ({
   svgContainer: {
     width: "90%",
@@ -40,16 +41,24 @@ const ClusterView = (props) => {
       const eventPos = [];
       const eventLen = phase.phaseLength;
       eventSeq.forEach((event) => {
-        eventPos.push(event.positions[0]);
+        eventPos.push({
+          x: event.positions[0].x,
+          y: event.positions[0].y,
+          evenName: event.eventName,
+        });
       });
       if (eventSeq[eventLen - 1]?.positions[1]?.x !== 0)
-        eventPos.push(eventSeq[eventLen - 1].positions[1]);
+        eventPos.push({
+          x: eventSeq[eventLen - 1].positions[1].x,
+          y: eventSeq[eventLen - 1].positions[1].y,
+          evenName: eventSeq[eventLen - 1].evenName,
+        });
       clusterPos.push(eventPos);
     });
     //svg render directly on dom by useRef
     if (topSvg.current) {
-      const margin = 4.5;
-      const svgWidth = 1082;
+      const margin = 5.5;
+      const svgWidth = 1050;
       const svgHeight = 688;
       const svg = d3.select(topSvg.current);
       svg.selectAll("*").remove();
@@ -61,6 +70,7 @@ const ClusterView = (props) => {
         .scaleLinear()
         .domain([0, 100])
         .range([0, svgHeight - 2 * margin]);
+      //base info
       svg
         .append("g")
         .append("text")
@@ -69,30 +79,38 @@ const ClusterView = (props) => {
         .style("font-size", "16px")
         .style("text-decoration", "underline")
         .text(`Shots:${clusterShots}\nPhases:${clusterLen}`);
+      //legend
+      const symbolSize = 100;
+      const lengend = svg.append("g");
+      // basicGraph.circle(lengend, symbolSize).transform("translate", (80, 50));
+      basicGraph
+        .triangle(lengend, symbolSize)
+        .attr("transform", "translate(80,60)");
+      basicGraph
+        .triangle(lengend, symbolSize)
+        .attr("transform", "translate(80,70)");
+      basicGraph
+        .triangle(lengend, symbolSize)
+        .attr("transform", "translate(80,80)");
+      basicGraph
+        .triangle(lengend, symbolSize)
+        .attr("transform", "translate(80,90)");
       const phaseGs = svg.append("g");
+      // highlight a phase when click on the first node
       const highLightPhase = (phaseGroup) => {
-        const currentDis = phaseGroup
-          .selectAll("circle")
-          .filter((d, i) => i !== 0)
-          .attr("display");
+        // highLight or turnoff node
+        const currentDis = phaseGroup.selectAll("path").attr("display");
         const newDis = currentDis === "none" ? "initial" : "none";
-        phaseGroup
-          .selectAll("circle")
-          .filter((d, i) => i !== 0)
-          .attr("display", newDis);
-        const currentColor = phaseGroup.selectAll("line").style("stroke");
-        const newColor =
-          currentColor.toString() === "rgb(0, 0, 0)"
-            ? "rgb(255, 0, 0)"
-            : "rgb(0, 0, 0)";
-        phaseGroup.selectAll("line").style("stroke", newColor);
-        const currentWidth = phaseGroup.selectAll("line").style("stroke-width");
-        const newWidth = currentWidth.toString() === "2" ? "4" : "2";
-        phaseGroup.selectAll("line").style("stroke-width", newWidth);
+        phaseGroup.selectAll("path").attr("display", newDis);
+        // opacity
+        const currentOpac = phaseGroup.selectAll("line").attr("stroke-opacity");
+        const newOpac = currentOpac.toString() === "0" ? "1.0" : "0";
+        phaseGroup.selectAll("line").attr("stroke-opacity", newOpac);
       };
       clusterPos.forEach((phasePos, index) => {
+        // add each phase in a group
         const phaseGroup = phaseGs.append("g").classed(`phase-${index}`, true);
-        for (let i = 0; i < phasePos.length - 1; i++) {
+        for (let i = 0; i < phasePos.length; i++) {
           let nodeColor = "#000";
           let nodeShow = "none";
           let howMargin = !phasePos[i].y
@@ -100,8 +118,12 @@ const ClusterView = (props) => {
             : phasePos[i].y === 100
             ? margin
             : 0;
+          const translateP = `translate(${myXScale(phasePos[i].x)},${
+            svgHeight + howMargin - myYScale(phasePos[i].y)
+          })`;
+          // if this a start node
           if (i === 0) {
-            nodeColor = "#E71D36";
+            nodeColor = "#f00";
             nodeShow = "initial";
             phaseGroup
               .append("circle")
@@ -113,22 +135,49 @@ const ClusterView = (props) => {
               .on("click", () => {
                 highLightPhase(phaseGroup);
               });
-          } else
+          } else {
+            switch (phasePos[i].evenName) {
+              case "Pass":
+                basicGraph
+                  .triangle(phaseGroup, symbolSize)
+                  .attr("transform", translateP)
+                  .attr("fill", "blue")
+                  .attr("display", nodeShow);
+                break;
+              case "Duel":
+                basicGraph
+                  .wye(phaseGroup, symbolSize)
+                  .attr("transform", translateP)
+                  .attr("display", nodeShow)
+                  .attr("fill", "#EFDC05");
+                break;
+              case "Shot":
+                basicGraph
+                  .star(phaseGroup, symbolSize)
+                  .attr("transform", translateP)
+                  .attr("display", nodeShow)
+                  .attr("fill", "#f1404b");
+                break;
+              default:
+                basicGraph
+                  .square(phaseGroup, symbolSize)
+                  .attr("transform", translateP)
+                  .attr("display", nodeShow)
+                  .attr("fill", "#FFFFF3");
+                break;
+            }
+          }
+          if (i < phasePos.length - 1) {
             phaseGroup
-              .append("circle")
-              .attr("cx", myXScale(phasePos[i].x))
-              .attr("cy", svgHeight + howMargin - myYScale(phasePos[i].y))
-              .attr("r", margin)
-              .attr("display", nodeShow)
-              .style("fill", nodeColor);
-          phaseGroup
-            .append("line")
-            .attr("x1", myXScale(phasePos[i].x))
-            .attr("y1", svgHeight + howMargin - myYScale(phasePos[i].y))
-            .attr("x2", myXScale(phasePos[i + 1].x))
-            .attr("y2", svgHeight + howMargin - myYScale(phasePos[i + 1].y))
-            .style("stroke-width", 2)
-            .style("stroke", "#000");
+              .append("line")
+              .attr("x1", myXScale(phasePos[i].x))
+              .attr("y1", svgHeight + howMargin - myYScale(phasePos[i].y))
+              .attr("x2", myXScale(phasePos[i + 1].x))
+              .attr("y2", svgHeight + howMargin - myYScale(phasePos[i + 1].y))
+              .attr("stroke-opacity", 0)
+              .style("stroke-width", 3)
+              .style("stroke", "#000");
+          }
         }
       });
     }
@@ -136,7 +185,7 @@ const ClusterView = (props) => {
 
   return (
     <div className={classes.svgContainer}>
-      <svg className={classes.svgMove} viewBox="33 16 1082 688">
+      <svg className={classes.svgMove} viewBox="40 16 1070 688">
         <g className="field">
           {" "}
           <rect y="0" x="0" height="720" fill="green" width="1150" />
@@ -234,7 +283,7 @@ const ClusterView = (props) => {
       <svg
         ref={topSvg}
         className={classes.svgMove}
-        viewBox="0 0 1082 688"
+        viewBox="0 0 1050 688"
       ></svg>
     </div>
   );

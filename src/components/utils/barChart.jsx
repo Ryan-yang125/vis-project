@@ -1,13 +1,13 @@
 /*
  * @Author: your name
  * @Date: 2021-01-12 22:28:36
- * @LastEditTime: 2021-01-13 18:28:42
+ * @LastEditTime: 2021-01-13 21:47:48
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/utils/barChart.jsx
  */
 import { makeStyles } from "@material-ui/core/styles";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Paper } from "@material-ui/core";
 import * as d3 from "d3";
 const useStyles = makeStyles((theme) => ({
@@ -78,7 +78,7 @@ const BarChart = (props) => {
     }
   }, [props]);
   return (
-    <Paper className={classes.barChartContainer} elevation={1}>
+    <Paper className={classes.barChartContainer} elevation={4}>
       <svg ref={barChartSvg} viewBox="0 0 800 1000"></svg>
     </Paper>
   );

@@ -1,12 +1,11 @@
 /*
  * @Author: your name
  * @Date: 2021-01-10 19:43:42
- * @LastEditTime: 2021-01-13 15:30:37
+ * @LastEditTime: 2021-01-13 21:52:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/header/header.jsx
  */
-import { Paper } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import SportsSoccerIcon from "@material-ui/icons/SportsSoccer";
 const useStyles = makeStyles((theme) => ({

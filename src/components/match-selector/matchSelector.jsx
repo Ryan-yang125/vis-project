@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-09 16:16:25
- * @LastEditTime: 2021-01-13 18:45:47
+ * @LastEditTime: 2021-01-13 21:47:08
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/grid.jsx
@@ -191,7 +191,7 @@ const MatchSelector = (props) => {
           clusterViewTop
         )}
       </Paper>
-      <Paper elevation={2} className={classes.toolContainer}>
+      <Paper elevation={1} className={classes.toolContainer}>
         {clusterViewOthers}
       </Paper>
     </div>
