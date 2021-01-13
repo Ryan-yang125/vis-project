@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-12 21:30:28
+ * @LastEditTime: 2021-01-13 19:06:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
@@ -11,14 +11,16 @@ import { useRef, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 const useStyle = makeStyles((theme) => ({
   svgContainer: {
-    margin: theme.spacing(2),
     width: "90%",
-    height: "100%",
+    height: "80%",
     position: "relative",
   },
   svgMove: {
+    width: "100%",
+    height: "100%",
     position: "absolute",
-    top: "10%",
+    // left: "1vw",
+    top: "4vh",
   },
 }));
 
@@ -40,7 +42,7 @@ const ClusterView = (props) => {
       eventSeq.forEach((event) => {
         eventPos.push(event.positions[0]);
       });
-      if (eventSeq[eventLen - 1].positions[1].x !== 0)
+      if (eventSeq[eventLen - 1]?.positions[1]?.x !== 0)
         eventPos.push(eventSeq[eventLen - 1].positions[1]);
       clusterPos.push(eventPos);
     });
@@ -51,13 +53,21 @@ const ClusterView = (props) => {
       const svgHeight = 688;
       const svg = d3.select(topSvg.current);
       svg.selectAll("*").remove();
-      const myXScale = d3.scaleLinear().domain([0, 100]).range([0, svgWidth]);
-      const myYScale = d3.scaleLinear().domain([0, 100]).range([0, svgHeight]);
+      const myXScale = d3
+        .scaleLinear()
+        .domain([0, 100])
+        .range([0, svgWidth - 2 * margin]);
+      const myYScale = d3
+        .scaleLinear()
+        .domain([0, 100])
+        .range([0, svgHeight - 2 * margin]);
       svg
         .append("g")
         .append("text")
-        .attr("x", 70)
+        .attr("x", 40)
         .attr("y", 50)
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
         .text(`Shots:${clusterShots}\nPhases:${clusterLen}`);
       const phaseGs = svg.append("g");
       const highLightPhase = (phaseGroup) => {

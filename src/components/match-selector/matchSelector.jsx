@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-09 16:16:25
- * @LastEditTime: 2021-01-12 18:20:20
+ * @LastEditTime: 2021-01-13 18:45:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/grid.jsx
@@ -11,12 +11,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import matchData from "../../assets/match-data.json";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import { Button, Paper, CircularProgress } from "@material-ui/core";
 import axios from "axios";
-import ClusterViewTop from "../utils/clusterView";
+import MainView from "../main-view/mainView";
 import ToolTip from "../tool-tip/tool-tip";
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -44,11 +43,11 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "68vw",
+    width: "65vw",
   },
   toolContainer: {
     display: "flex",
-    width: "18vw",
+    width: "20vw",
   },
 }));
 
@@ -59,6 +58,7 @@ const MatchSelector = (props) => {
   const [team, setTeam] = useState(0);
   const [match, setMatch] = useState(0);
   const [ifLoading, setIfLoading] = useState(false);
+  const [clusterIndex, setClusterIndex] = useState(0);
   const handleCompetitionChange = (event) => {
     setCompetition(event.target.value);
   };
@@ -95,8 +95,8 @@ const MatchSelector = (props) => {
     const teams = matchData.children[competition].children[team];
     teams.children.forEach((value, index) => {
       matches.push(
-        <MenuItem value={index} key={value.wyId}>
-          {`${teams.name} VS ${value.name}`}
+        <MenuItem value={index} key={value.label}>
+          {value.label}
         </MenuItem>
       );
     });
@@ -121,14 +121,26 @@ const MatchSelector = (props) => {
       console.log(error);
     }
   };
+  const onBarClick = (value) => {
+    setClusterIndex(value);
+  };
   let clusterViewTop = <div></div>;
   let clusterViewOthers = <div></div>;
   // TODO cluterView refresh too many times
   if (clusteredData.length !== 0) {
+    const selectedMatch =
+      matchData.children[competition].children[team].children[match];
     clusterViewTop = (
-      <ClusterViewTop data={clusteredData} num={0} scale={1.0} />
+      <MainView
+        data={clusteredData}
+        num={clusterIndex}
+        scale={1.0}
+        label={selectedMatch.label}
+      />
     );
-    clusterViewOthers = <ToolTip data={clusteredData} />;
+    clusterViewOthers = (
+      <ToolTip data={clusteredData} onBarClick={onBarClick} />
+    );
   }
   return (
     <div className={classes.mainContainer}>
