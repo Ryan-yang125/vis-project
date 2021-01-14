@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-13 18:32:01
- * @LastEditTime: 2021-01-13 19:00:46
+ * @LastEditTime: 2021-01-14 14:57:16
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/mainView/mainView.jsx
@@ -31,6 +31,7 @@ const MainView = (props) => {
         num={props.num}
         scale={props.scale}
         label={props.label}
+        ifShowAllPath={props.ifShowAllPath}
       />
     </div>
   );

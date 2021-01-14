@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-14 11:45:53
+ * @LastEditTime: 2021-01-14 15:02:30
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
@@ -138,15 +138,20 @@ const ClusterView = (props) => {
         .attr("transform", "translate(170,130)");
       const phaseGs = svg.append("g");
       // highlight a phase when click on the first node
+      const strokOpacity = props.ifShowAllPath ? 1 : 0;
       const highLightPhase = (phaseGroup) => {
         // highLight or turnoff node
         const currentDis = phaseGroup.selectAll("path").attr("display");
         const newDis = currentDis === "none" ? "initial" : "none";
         phaseGroup.selectAll("path").attr("display", newDis);
         // opacity
-        const currentOpac = phaseGroup.selectAll("line").attr("stroke-opacity");
-        const newOpac = currentOpac.toString() === "0" ? "1.0" : "0";
-        phaseGroup.selectAll("line").attr("stroke-opacity", newOpac);
+        if (!strokOpacity) {
+          const currentOpac = phaseGroup
+            .selectAll("line")
+            .attr("stroke-opacity");
+          const newOpac = currentOpac.toString() === "0" ? "1.0" : "0";
+          phaseGroup.selectAll("line").attr("stroke-opacity", newOpac);
+        }
       };
       clusterPos.forEach((phasePos, index) => {
         // add each phase in a group
@@ -229,7 +234,7 @@ const ClusterView = (props) => {
               .attr("y1", svgHeight + howMargin - myYScale(phasePos[i].y))
               .attr("x2", myXScale(phasePos[i + 1].x))
               .attr("y2", svgHeight + howMargin - myYScale(phasePos[i + 1].y))
-              .attr("stroke-opacity", 0)
+              .attr("stroke-opacity", strokOpacity)
               .style("stroke-width", 3)
               .style("stroke", "#000");
           }
