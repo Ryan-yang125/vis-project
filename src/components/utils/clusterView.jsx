@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-14 11:05:34
+ * @LastEditTime: 2021-01-14 11:45:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
@@ -51,7 +51,7 @@ const ClusterView = (props) => {
         eventPos.push({
           x: eventSeq[eventLen - 1].positions[1].x,
           y: eventSeq[eventLen - 1].positions[1].y,
-          evenName: eventSeq[eventLen - 1].evenName,
+          evenName: eventSeq[eventLen - 1].eventName,
         });
       clusterPos.push(eventPos);
     });
@@ -124,9 +124,18 @@ const ClusterView = (props) => {
         .attr("transform", "translate(150,95)");
       lengend
         .append("text")
-        .text("Others")
+        .text("Others on the Ball")
         .style("font-size", "20px")
         .attr("transform", "translate(170,100)");
+      basicGraph
+        .cross(lengend, symbolSize)
+        .attr("fill", "#49010F")
+        .attr("transform", "translate(150,125)");
+      lengend
+        .append("text")
+        .text("Free Kick")
+        .style("font-size", "20px")
+        .attr("transform", "translate(170,130)");
       const phaseGs = svg.append("g");
       // highlight a phase when click on the first node
       const highLightPhase = (phaseGroup) => {
@@ -190,12 +199,26 @@ const ClusterView = (props) => {
                   .attr("display", nodeShow)
                   .attr("fill", "#f1404b");
                 break;
-              default:
+              case "Others on the ball":
                 basicGraph
                   .square(phaseGroup, symbolSize)
                   .attr("transform", translateP)
                   .attr("display", nodeShow)
                   .attr("fill", "#FFFFF3");
+                break;
+              case "Free Kick":
+                basicGraph
+                  .cross(phaseGroup, symbolSize)
+                  .attr("transform", translateP)
+                  .attr("display", nodeShow)
+                  .attr("fill", "#49010F");
+                break;
+              default:
+                basicGraph
+                  .diamond(phaseGroup, symbolSize)
+                  .attr("transform", translateP)
+                  .attr("display", nodeShow)
+                  .attr("fill", "#AACD6E");
                 break;
             }
           }

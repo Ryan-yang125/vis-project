@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-10 19:43:42
- * @LastEditTime: 2021-01-13 21:52:09
+ * @LastEditTime: 2021-01-14 11:48:54
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/header/header.jsx
@@ -11,7 +11,7 @@ import SportsSoccerIcon from "@material-ui/icons/SportsSoccer";
 const useStyles = makeStyles((theme) => ({
   appContainer: {
     marginBottom: theme.spacing(2),
-    backgroundColor: "#3F4B3B",
+    backgroundColor: "#44633F",
     color: "#fff",
     minHeight: theme.spacing(5),
     display: "flex",
