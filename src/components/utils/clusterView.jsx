@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-14 00:02:02
+ * @LastEditTime: 2021-01-14 11:05:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/clusterView/clusterView.jsx
@@ -57,7 +57,7 @@ const ClusterView = (props) => {
     });
     //svg render directly on dom by useRef
     if (topSvg.current) {
-      const margin = 5.5;
+      const margin = 9.5;
       const svgWidth = 1050;
       const svgHeight = 688;
       const svg = d3.select(topSvg.current);
@@ -74,27 +74,59 @@ const ClusterView = (props) => {
       svg
         .append("g")
         .append("text")
-        .attr("x", 40)
-        .attr("y", 50)
-        .style("font-size", "16px")
+        .style("font-size", "20px")
         .style("text-decoration", "underline")
+        .attr("transform", "translate(50,40)")
         .text(`Shots:${clusterShots}\nPhases:${clusterLen}`);
       //legend
-      const symbolSize = 100;
+      const symbolSize = 300;
       const lengend = svg.append("g");
-      // basicGraph.circle(lengend, symbolSize).transform("translate", (80, 50));
       basicGraph
-        .triangle(lengend, symbolSize)
-        .attr("transform", "translate(80,60)");
-      basicGraph
-        .triangle(lengend, symbolSize)
+        .circle(lengend, symbolSize)
+        .attr("fill", "red")
+        .attr("transform", "translate(60,65)");
+
+      lengend
+        .append("text")
+        .text("Start")
+        .style("font-size", "20px")
         .attr("transform", "translate(80,70)");
       basicGraph
         .triangle(lengend, symbolSize)
-        .attr("transform", "translate(80,80)");
+        .attr("fill", "blue")
+        .attr("transform", "translate(60,95)");
+      lengend
+        .append("text")
+        .text("Pass")
+        .style("font-size", "20px")
+        .attr("transform", "translate(80,100)");
       basicGraph
-        .triangle(lengend, symbolSize)
-        .attr("transform", "translate(80,90)");
+        .star(lengend, symbolSize)
+        .attr("fill", "#f1404b")
+        .attr("transform", "translate(60,125)");
+      lengend
+        .append("text")
+        .text("Shot")
+        .style("font-size", "20px")
+        .attr("transform", "translate(80,130)");
+      basicGraph
+        .wye(lengend, symbolSize)
+        .attr("fill", "#EFDC05")
+        .attr("transform", "translate(150,65)");
+      lengend
+        .append("text")
+        .text("Duel")
+        .style("font-size", "20px")
+        .attr("transform", "translate(170,70)");
+      basicGraph
+        .square(lengend, symbolSize)
+        .attr("fill", "#FFFFF3")
+        .attr("transform", "translate(150,95)");
+      lengend
+        .append("text")
+        .text("Others")
+        .style("font-size", "20px")
+        .attr("transform", "translate(170,100)");
       const phaseGs = svg.append("g");
       // highlight a phase when click on the first node
       const highLightPhase = (phaseGroup) => {
