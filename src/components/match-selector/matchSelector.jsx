@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-09 16:16:25
- * @LastEditTime: 2021-01-14 15:03:25
+ * @LastEditTime: 2021-01-15 11:28:48
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/grid.jsx
@@ -161,7 +161,7 @@ const MatchSelector = (props) => {
     try {
       setIfLoading(true);
       const response = await axios.get(
-        `http://localhost:5500/?wyId=${selectedMatch.wyId}&clusters=${clusters}`
+        `http://localhost:5050/?wyId=${selectedMatch.wyId}&clusters=${clusters}`
       );
       console.log(response.data, clusters);
       setIfLoading(false);
