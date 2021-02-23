@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-01-13 22:16:02
- * @LastEditTime: 2021-01-13 23:04:13
+ * @LastEditTime: 2021-02-23 15:21:55
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /vis/src/components/utils/basicGraph.jsx
@@ -33,6 +33,7 @@ const star = (svgGroup, size) =>
 
 const wye = (svgGroup, size) =>
   svgGroup.append("path").attr("d", d3.symbol().type(d3.symbolWye).size(size));
+
 const square = (svgGroup, size) =>
   svgGroup
     .append("path")

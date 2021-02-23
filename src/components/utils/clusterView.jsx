@@ -1,11 +1,3 @@
-/*
- * @Author: your name
- * @Date: 2021-01-11 19:54:49
- * @LastEditTime: 2021-01-14 15:02:30
- * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
- * @FilePath: /vis/src/components/clusterView/clusterView.jsx
- */
 import * as d3 from "d3";
 import { useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
